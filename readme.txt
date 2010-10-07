@@ -5,12 +5,12 @@ Requires at least: 3.0
 Tested up to: 3.0.1
 Stable tag: trunk
 
-Adds a box to your page/post edit screen with links and edit buttons for all pages, posts, tags, categories, and links for convenient edit-switching and internal linking.
+Adds a box to your page/post edit screen with links and edit buttons for all pages, posts, tags, categories, and links for convenient linking.
 
 == Description ==
 
 <p>
-Adds a box to your page/post edit screen with links and edit buttons for all pages, posts, tags, categories, and links for convenient edit-switching and internal linking.                 
+Adds a box to your page/post edit screen with links and edit buttons for all pages, posts, tags, categories, and links for convenient linking.                
 </p>
 
 <p>This plugin contains a self-caching feature so that the HTML code does not need to be recompiled every time the box is displayed, making it surprisingly light-weight.
