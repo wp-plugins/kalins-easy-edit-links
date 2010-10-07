@@ -44,7 +44,7 @@ Note: May require PHP 5.2 (hasn't been tested on older versions)
 == Changelog ==
 
 = 0.7 =
-* First version. Beta. Has pages, posts, tags, categories and posts. Settings include enable cache, height, text length, show drafts, show future and show private.
+* First version. Beta. Has pages, posts, tags, categories and links. Settings include enable cache, height, text length, show drafts, show future and show private.
 
 == Upgrade Notice ==
 
