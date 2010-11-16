@@ -54,7 +54,7 @@
 <p>This is what you should see on the page/post edit screen:</p>
 <br/>
 
-<div style="width:300px">
+<div style="width:300px" id="testID">
 
 <?php
 	kalinsLinks_inner_custom_box(null);
@@ -79,4 +79,5 @@ if($versionNum < 5){//I have no idea what this thing will do at anything below 5
 ?>
 <p>Kalin's Easy Edit Links was built with WordPress version 3.0. It has NOT been tested on older versions and might fail.</p>
 <p>You may also like <a href="http://kalinbooks.com/pdf-creation-station/">Kalin's PDF Creation Station WordPress Plugin</a> - <br /> Create highly customizable PDF documents from any combination of pages and posts, or add a link to generate a PDF on each individual page or post.</p>
+<p>Or <a href="http://kalinbooks.com/post-list-wordpress-plugin/" target="_blank">Kalin's Post List</a> - <br /> Use a shortcode in your posts to insert dynamic, highly customizable lists of posts, pages, images, or attachments based on categories and tags. Works for table-of-contents pages or as a related posts plugin.</p>
 </html>
