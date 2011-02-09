@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Kalin's Easy Edit Links
-Version: 0.7
+Version: 1.0
 Plugin URI: http://kalinbooks.com/easy-edit-links/
 Description: Adds a box to your page/post edit screen with links and edit buttons for all pages, posts, tags, categories, and links for convenient linking.
 Author: Kalin Ringkvist
@@ -45,15 +45,17 @@ function kalinsLinks_admin_init(){
 	add_action('wp_ajax_kalinsLinks_refresh', 'kalinsLinks_refresh');
 	add_action('wp_ajax_kalinsLinks_save', 'kalinsLinks_save');
 	
-	//--------------you may remove these three lines (comment them out) if you are using hard-coded PDF links in your theme. This will make your admin panels run slightly more efficiently.--------------
 	add_meta_box( 'kalinsLinks_sectionid', __( "Easy Edit Links", 'kalinsLinks_textdomain' ), 'kalinsLinks_inner_custom_box', 'post', 'side' );
     add_meta_box( 'kalinsLinks_sectionid', __( "Easy Edit Links", 'kalinsLinks_textdomain' ), 'kalinsLinks_inner_custom_box', 'page', 'side' );
-	//--------------------------------
 	
+	$post_types = get_post_types('','names'); 
+	foreach ($post_types as $post_type ) {//loop to add a meta box to each type of post (pages, posts and custom)
+		add_meta_box( 'kalinsLinks_sectionid', __( "Easy Edit Links", 'kalinsLinks_textdomain' ), 'kalinsLinks_inner_custom_box', $post_type, 'side' );
+	}
 }
 
 function kalinsLinks_save(){
-	
+	//echo "WTF is going on?";
 	check_ajax_referer( "kalinsLinks_admin_save" );
 	
 	$outputVar = new stdClass();
@@ -68,6 +70,7 @@ function kalinsLinks_save(){
 	$kalinsLinksAdminOptions['includeFuture'] = $_POST['includeFuture'];
 	$kalinsLinksAdminOptions['includePrivate'] = $_POST['includePrivate'];
 	
+	$kalinsLinksAdminOptions['typeArr'] = $_POST['typeArr'];
 	
 	$kalinsLinksAdminOptions['cache'] = 'none';
 	
@@ -80,10 +83,20 @@ function kalinsLinks_refresh() {
 	$kalinsLinksAdminOptions = get_option(KALINSLINKS_ADMIN_OPTIONS_NAME);
 	$kalinsLinksAdminOptions['cache'] = 'none';
 	update_option(KALINSLINKS_ADMIN_OPTIONS_NAME, $kalinsLinksAdminOptions);
+	
+	//echo kalinsLinks_inner_custom_box(null);
 }
 
 function kalinsLinks_configure_pages() {
-	$mypage = add_submenu_page('options-general.php', 'Easy Edit Links', 'Easy Edit Links', 'manage_options', __FILE__, 'kalinsLinks_admin_page');
+	$mypage = add_submenu_page('options-general.php', 'Easy Edit Links', 'Easy Edit Links', 'manage_options', 'easy-edit-links', 'kalinsLinks_admin_page');
+	
+	add_action( "admin_print_scripts-$mypage", 'kalins_links_admin_head' );
+}
+
+function kalins_links_admin_head() {
+	wp_enqueue_script("jquery");
+	wp_enqueue_script("jquery-ui-sortable");
+	//wp_enqueue_script("jquery-ui-dialog");
 }
 
 function kalinsLinks_inner_custom_box($post) {//creates the box that goes on the post/page edit page
@@ -116,10 +129,12 @@ function kalinsLinks_getAdminSettings(){//simply returns all our default option 
 	$kalinsLinksAdminOptions['includeFuture'] = 'true';
 	$kalinsLinksAdminOptions['includePrivate'] = 'true';
 	
+	$kalinsLinksAdminOptions['typeArr'] = '[{"typeName":"page","enabled":true,"abbr":"page"},{"typeName":"post","enabled":true,"abbr":"post"},{"typeName":"category","enabled":true,"abbr":"cat"},{"typeName":"tag","enabled":true,"abbr":"tag"},{"typeName":"link","enabled":true,"abbr":"link"},{"typeName":"attachment","enabled":true,"abbr":"att"},{"typeName":"revision","enabled":false,"abbr":"rev"},{"typeName":"nav_menu_item","enabled":false,"abbr":"nav"}]';
+	
 	return $kalinsLinksAdminOptions;
 }
 
-function kalinsLinks_cleanup() {//deactivation hook. Clear all traces of PDF Creation Station
+function kalinsLinks_cleanup() {//deactivation hook. Clear all traces of Easy Edit Links
 	delete_option(KALINSLINKS_ADMIN_OPTIONS_NAME);//remove all options for admin
 } 
 

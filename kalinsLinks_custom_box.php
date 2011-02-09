@@ -5,6 +5,43 @@ if ( !function_exists( 'add_action' ) ) {
 	exit;
 }
 
+/*function my_excerpt($text, $excerpt){
+	
+    if ($excerpt) return $excerpt;
+	
+	$raw_excerpt = $text;
+    
+	$text = strip_shortcodes( $text );
+
+    $text = apply_filters('the_content', $text);
+    $text = str_replace(']]>', ']]&gt;', $text);
+    $text = strip_tags($text);
+    $excerpt_length = apply_filters('excerpt_length', 55);
+    $excerpt_more = apply_filters('excerpt_more', ' ' . '[...]');
+    $words = preg_split("/[\n\r\t ]+/", $text, $excerpt_length + 1, PREG_SPLIT_NO_EMPTY);
+    if ( count($words) > $excerpt_length ) {
+    	array_pop($words);
+        $text = implode(' ', $words);
+        $text = $text . $excerpt_more;
+    } else {
+        $text = implode(' ', $words);
+    }
+
+    return apply_filters('wp_trim_excerpt', $text, $raw_excerpt);
+}*/
+
+function my_excerpt($text, $excerpt){
+	if($excerpt){
+		return $excerpt;
+	}
+	//$text = strip_tags(strip_shortcodes	
+	if(strlen($text) > 250){
+		return htmlspecialchars(strip_tags(strip_shortcodes(substr($text, 0, 250)))) ."...";//clean up and return excerpt
+	}else{
+		return htmlspecialchars(strip_tags(strip_shortcodes($text)));
+	}
+}
+
 $adminOptions = kalinsLinks_get_admin_options();//for individual pages/posts we grab all the PDF options from the options page instead of the POST
 		
 //$titlePage = $adminOptions["titlePage"];
@@ -42,25 +79,20 @@ if($adminOptions["includePrivate"] == "true"){
 //$filterString = $filterString .",draft";
 
 
-$output =   '<style type="text/css">
+$beginOutput =   '<style type="text/css">
   	.KLScrollBox{overflow:scroll; overflow-x:hidden; height:' .$adminOptions['boxHeight'] .'px;}
+	.KLScrollNav{overflow-x:auto;}
   </style>
-  
-  <script type="text/javascript">
-		var divArray = new Array("KLPage", "KLPost", "KLCategory", "KLTag", "KLLink");							
-		
+  <script type="text/javascript">		
 		function KLSetType(intType){
-			for(var i=0; i<5; i++){
+			var l = divArray.length;
+			for(var i=0; i<l; i++){
 				document.getElementById(divArray[i]).style.display = "none";
 			}
 			document.getElementById(divArray[intType]).style.display = "block";
 		}
 		
 		function KLRefresh(){
-			
-			/*var data = { action: "kalins_pdf_admin_save",
-				_ajax_nonce : saveNonce
-			}*/
 			
 			if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
 				xmlhttp=new XMLHttpRequest();
@@ -77,79 +109,95 @@ $output =   '<style type="text/css">
 			xmlhttp.open("POST",ajaxurl,true);
 			xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 			xmlhttp.send("action=kalinsLinks_refresh&_ajax_nonce=saveNonce");
+		}';
+   
+	$divArrayOutput = 'var divArray = new Array(';
+	$navOutput = '</script><div class="KLScrollNav"><p align="left">';
+	$output = '';
+	
+	$typeCount = 0;
+    
+	$typeArr = json_decode(stripslashes($adminOptions["typeArr"]));
+	$l = count($typeArr);
+	$wpurl = get_blogInfo("wpurl");
+	
+	for ( $i = 0; $i < $l; $i++) {//loop to add a sortable item for every one in our list
+		
+		if(!$typeArr[$i]->enabled){
+			continue;
 		}
 		
-	</script>
-    
-   <p align="center"><a href="javascript:KLSetType(0);">Page</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<a href="javascript:KLSetType(1);">Post</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<a href="javascript:KLSetType(2);">Category</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<a href="javascript:KLSetType(3);">Tag</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<a href="javascript:KLSetType(4);">Link</a></p>
-   <div id="KLPage" class="KLScrollBox">';
-   
-   
- 
-   		//$pageList = get_pages();
-		$pageList = get_posts('numberposts=-1&post_type=page&post_status=' .$filterString);
-        $l = count($pageList);
-		for($i=0; $i<$l; $i++){//build our list of pages with checkboxes
-           	$pageID = $pageList[$i]->ID;
-			$wpurl = get_blogInfo("wpurl");
-            $output = $output .'<a href="' .$wpurl .'/wp-admin/post.php?post=' .$pageID .'&action=edit">edit</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href=" ' .get_permalink( $pageID ) .'" title="' .$pageList[$i]->post_excerpt .'">' .substr($pageList[$i]->post_title, 0, $charLength) .'</a><br />';
-        }
-    
-   
-   
-   	$output = $output .'</div>
-   	<div id="KLPost" class="KLScrollBox" style="display:none">';
-   
+		$typeName = $typeArr[$i]->typeName;
+		
+		if($i == 0){
+			$output = $output .'<div id="KL_' .$typeName .'" class="KLScrollBox">';
+		}else{
+			$output = $output .'<div id="KL_' .$typeName .'" class="KLScrollBox" style="display:none">';
+		}
+		
+		$divArrayOutput = $divArrayOutput .'"KL_' .$typeName .'", ';
+		
+		$navOutput = $navOutput .'<a href="javascript:KLSetType(' .$typeCount .');">' .$typeArr[$i]->abbr .'</a>&nbsp;&nbsp;|&nbsp;&nbsp;';
+		
+		switch($typeName){
+			
+			case "tag":
+				$pageList = get_tags('hide_empty=0');
+				$le = count($pageList);
+				for($j=0; $j<$le; $j++){//build our list of tags
+					$pageID = $pageList[$j]->term_id;
+					$wpurl = get_blogInfo("wpurl");
+					$output = $output .'<a href="' .$wpurl .'/wp-admin/edit-tags.php?action=edit&taxonomy=post_tag&post_type=post&tag_ID=' .$pageID .'">edit</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href=" ' .get_tag_link( $pageID ) .'" title="' .$pageList[$j]->description .'">' .$pageList[$j]->name .'</a><br />';
+				}
+				break;
+			case "category":
+				$pageList = get_categories('hide_empty=0');
+				$le = count($pageList);
+				for($j=0; $j<$le; $j++){//build our list of cats
+					$pageID = $pageList[$j]->term_id;
+					$wpurl = get_blogInfo("wpurl");
+					$output = $output .'<a href="' .$wpurl .'/wp-admin/edit-tags.php?action=edit&taxonomy=category&post_type=post&tag_ID=' .$pageID .'">edit</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href=" ' .get_category_link( $pageID ) .'" title="' .$pageList[$j]->description .'">' .$pageList[$j]->name .'</a><br />'; 
+				}
+				break;
+			case "link":
+				$pageList = get_bookmarks('hide_invisible=0');
+				$le = count($pageList);
+				for($j=0; $j<$le; $j++){//build our list of links
+					$pageID = $pageList[$j]->link_id;
+					$wpurl = get_blogInfo("wpurl");
+					$output = $output .'<a href="' .$wpurl .'/wp-admin/link.php?action=edit&link_id=' .$pageID .'">edit</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href=" ' .$pageList[$j]->link_url .'" title="' .$pageList[$j]->link_description .'">' .substr($pageList[$j]->link_name, 0, $charLength)  .'</a><br />';
+				}
+				break;
+			
+			case "attachment" :
+				$pageList = get_posts('numberposts=-1&post_type=' .$typeName);
+				
+				$le = count($pageList);
+				for($j=0; $j<$le; $j++){//build our list of pages with checkboxes
+					$pageID = $pageList[$j]->ID;
+					$output = $output .'<a href="' .$wpurl .'/wp-admin/media.php?attachment_id=' .$pageID .'&action=edit">edit</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href=" ' .wp_get_attachment_url( $pageID ) .'" title="' .$pageList[$j]->post_content .'">' .substr($pageList[$j]->post_title, 0, $charLength) .'</a><br />';
+				}
+				break;
+				
+			default :
+				$pageList = get_posts('numberposts=-1&post_type=' .$typeName .'&post_status=' .$filterString);
+				$le = count($pageList);
+				for($j=0; $j<$le; $j++){//build our list of pages with checkboxes
+					$pageID = $pageList[$j]->ID;
+					$output = $output .'<a href="' .$wpurl .'/wp-admin/post.php?post=' .$pageID .'&action=edit">edit</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href=" ' .get_permalink( $pageID ) .'" title="' .my_excerpt($pageList[$j]->post_content , $pageList[$j]->post_excerpt).'">' .substr($pageList[$j]->post_title, 0, $charLength) .'</a><br />';
+				}
+				break;
+		}
+		
+		$output = $output ."</div>";
+		
+		$typeCount++;
+	}
 	
-   		$pageList = get_posts('numberposts=-1&post_status=' .$filterString);
-        $l = count($pageList);
-		for($i=0; $i<$l; $i++){//build our list of posts
-           	$pageID = $pageList[$i]->ID;
-			$wpurl = get_blogInfo("wpurl");
-            $output = $output .'<a href="' .$wpurl .'/wp-admin/post.php?post=' .$pageID .'&action=edit">edit</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href=" ' .get_permalink( $pageID ) .'" title="' .$pageList[$i]->post_excerpt .'">' .substr($pageList[$i]->post_title, 0, $charLength)  .'</a><br />';
-        }
-	
+	$navOutput = substr($navOutput, 0, count($navOutput) - 20) .'</p></div>';//remove the final "|" divider and the &nbsp;'s that go with it and close the p
+	$divArrayOutput = substr($divArrayOutput, 0, count($divArrayOutput) - 3) .');';//remove the last comma and close the array.
+	$output = $beginOutput .$divArrayOutput .$navOutput .$output;
    
-   	$output = $output .'</div>
-   	<div id="KLCategory" class="KLScrollBox" style="display:none">';
-    
-    
-		$pageList = get_categories('hide_empty=0');
-        $l = count($pageList);
-		for($i=0; $i<$l; $i++){//build our list of cats
-           	$pageID = $pageList[$i]->term_id;
-			$wpurl = get_blogInfo("wpurl");
-            $output = $output .'<a href="' .$wpurl .'/wp-admin/edit-tags.php?action=edit&taxonomy=category&post_type=post&tag_ID=' .$pageID .'">edit</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href=" ' .get_category_link( $pageID ) .'" title="' .$pageList[$i]->description .'">' .$pageList[$i]->name .'</a><br />'; 
-        }
-	
-    
-     $output = $output .'</div>
-   	<div id="KLTag" class="KLScrollBox" style="display:none">';
-    
-    
-		$pageList = get_tags('hide_empty=0');
-        $l = count($pageList);
-		for($i=0; $i<$l; $i++){//build our list of tags
-           	$pageID = $pageList[$i]->term_id;
-			$wpurl = get_blogInfo("wpurl");
-            $output = $output .'<a href="' .$wpurl .'/wp-admin/edit-tags.php?action=edit&taxonomy=post_tag&post_type=post&tag_ID=' .$pageID .'">edit</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href=" ' .get_tag_link( $pageID ) .'" title="' .$pageList[$i]->description .'">' .$pageList[$i]->name .'</a><br />';
-        }
-	
-    
-    $output = $output .'</div>
-   	<div id="KLLink" class="KLScrollBox" style="display:none">';
-    
-    
-		$pageList = get_bookmarks('hide_invisible=0');
-        $l = count($pageList);
-		for($i=0; $i<$l; $i++){//build our list of links
-           	$pageID = $pageList[$i]->link_id;
-			$wpurl = get_blogInfo("wpurl");
-            $output = $output .'<a href="' .$wpurl .'/wp-admin/link.php?action=edit&link_id=' .$pageID .'">edit</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href=" ' .$pageList[$i]->link_url .'" title="' .$pageList[$i]->link_description .'">' .substr($pageList[$i]->link_name, 0, $charLength)  .'</a><br />';
-        }
-	
-    
-	$output = $output .'</div>';
 	if($adminOptions["enableCache"] == "true"){
 		$output = $output .'<p align="right"><a href="javascript:KLRefresh();">Refresh</a></p>';
 		$adminOptions["cache"] = $output;//save the whole dang thing to a simple option
