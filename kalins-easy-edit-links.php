@@ -108,7 +108,7 @@ function kalinsLinks_get_admin_options() {
 	
 	$devOptions = get_option(KALINSLINKS_ADMIN_OPTIONS_NAME);
 
-	if (!empty($devOptions)) {
+	if (!$devOptions || !empty($devOptions)) {
 		foreach ($devOptions as $key => $option){
 			$kalinsLinksAdminOptions[$key] = $option;
 		}
