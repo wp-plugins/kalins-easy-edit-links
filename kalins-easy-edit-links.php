@@ -3,7 +3,7 @@
 Plugin Name: Kalin's Easy Edit Links
 Version: 1.0
 Plugin URI: http://kalinbooks.com/easy-edit-links/
-Description: NOTE: !!!!Please deactivate this plugin then re-activate if upgrading to version 1.0 to avoid a PHP error!!!! Adds a box to your page/post edit screen with links and edit buttons for all pages, posts, tags, categories, and links for convenient linking.
+Description: Adds a box to your page/post edit screen with links and edit buttons for all pages, posts, tags, categories, and links for convenient linking.
 Author: Kalin Ringkvist
 Author URI: http://kalinbooks.com/
 
