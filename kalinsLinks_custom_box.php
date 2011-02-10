@@ -31,10 +31,15 @@ if ( !function_exists( 'add_action' ) ) {
 }*/
 
 function my_excerpt($text, $excerpt){
+	
+	return "";
+	
 	if($excerpt){
 		return $excerpt;
 	}
+	
 	//$text = strip_tags(strip_shortcodes	
+	
 	if(strlen($text) > 250){
 		return htmlspecialchars(strip_tags(strip_shortcodes(substr($text, 0, 250)))) ."...";//clean up and return excerpt
 	}else{
@@ -146,7 +151,7 @@ $beginOutput =   '<style type="text/css">
 				$le = count($pageList);
 				for($j=0; $j<$le; $j++){//build our list of tags
 					$pageID = $pageList[$j]->term_id;
-					$wpurl = get_blogInfo("wpurl");
+					//$wpurl = get_blogInfo("wpurl");
 					$output = $output .'<a href="' .$wpurl .'/wp-admin/edit-tags.php?action=edit&taxonomy=post_tag&post_type=post&tag_ID=' .$pageID .'">edit</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href=" ' .get_tag_link( $pageID ) .'" title="' .$pageList[$j]->description .'">' .$pageList[$j]->name .'</a><br />';
 				}
 				break;
@@ -155,7 +160,7 @@ $beginOutput =   '<style type="text/css">
 				$le = count($pageList);
 				for($j=0; $j<$le; $j++){//build our list of cats
 					$pageID = $pageList[$j]->term_id;
-					$wpurl = get_blogInfo("wpurl");
+					//$wpurl = get_blogInfo("wpurl");
 					$output = $output .'<a href="' .$wpurl .'/wp-admin/edit-tags.php?action=edit&taxonomy=category&post_type=post&tag_ID=' .$pageID .'">edit</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href=" ' .get_category_link( $pageID ) .'" title="' .$pageList[$j]->description .'">' .$pageList[$j]->name .'</a><br />'; 
 				}
 				break;
@@ -164,7 +169,7 @@ $beginOutput =   '<style type="text/css">
 				$le = count($pageList);
 				for($j=0; $j<$le; $j++){//build our list of links
 					$pageID = $pageList[$j]->link_id;
-					$wpurl = get_blogInfo("wpurl");
+					//$wpurl = get_blogInfo("wpurl");
 					$output = $output .'<a href="' .$wpurl .'/wp-admin/link.php?action=edit&link_id=' .$pageID .'">edit</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href=" ' .$pageList[$j]->link_url .'" title="' .$pageList[$j]->link_description .'">' .substr($pageList[$j]->link_name, 0, $charLength)  .'</a><br />';
 				}
 				break;

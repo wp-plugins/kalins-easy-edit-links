@@ -3,7 +3,7 @@
 Plugin Name: Kalin's Easy Edit Links
 Version: 1.0
 Plugin URI: http://kalinbooks.com/easy-edit-links/
-Description: You may be seeing a strange PHP error. It won't hurt anything and I hope to have it fixed within a couple days. Adds a box to your page/post edit screen with links and edit buttons for all pages, posts, tags, categories, and links for convenient linking.
+Description: Adds a box to your page/post edit screen with links and edit buttons for all pages, posts, tags, categories, and links for convenient linking.
 Author: Kalin Ringkvist
 Author URI: http://kalinbooks.com/
 
@@ -107,6 +107,10 @@ function kalinsLinks_get_admin_options() {
 	$kalinsLinksAdminOptions = kalinsLinks_getAdminSettings();
 	
 	$devOptions = get_option(KALINSLINKS_ADMIN_OPTIONS_NAME);
+	
+	//echo $devOptions ."<br />";
+	
+	//echo htmlentities($devOptions) ."------ and -------";
 
 	if (!$devOptions || !empty($devOptions)) {
 		foreach ($devOptions as $key => $option){
