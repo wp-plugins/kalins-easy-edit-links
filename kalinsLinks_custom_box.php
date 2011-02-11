@@ -5,34 +5,13 @@ if ( !function_exists( 'add_action' ) ) {
 	exit;
 }
 
-/*function my_excerpt($text, $excerpt){
-	
-    if ($excerpt) return $excerpt;
-	
-	$raw_excerpt = $text;
-    
-	$text = strip_shortcodes( $text );
+$adminOptions = kalinsLinks_get_admin_options();//for individual pages/posts we grab all the PDF options from the options page instead of the POST
 
-    $text = apply_filters('the_content', $text);
-    $text = str_replace(']]>', ']]&gt;', $text);
-    $text = strip_tags($text);
-    $excerpt_length = apply_filters('excerpt_length', 55);
-    $excerpt_more = apply_filters('excerpt_more', ' ' . '[...]');
-    $words = preg_split("/[\n\r\t ]+/", $text, $excerpt_length + 1, PREG_SPLIT_NO_EMPTY);
-    if ( count($words) > $excerpt_length ) {
-    	array_pop($words);
-        $text = implode(' ', $words);
-        $text = $text . $excerpt_more;
-    } else {
-        $text = implode(' ', $words);
-    }
-
-    return apply_filters('wp_trim_excerpt', $text, $raw_excerpt);
-}*/
-
-function my_excerpt($text, $excerpt){
+function my_excerpt($text, $excerpt, $include){
 	
-	return "";
+	if($include == "false"){
+		return "";
+	}
 	
 	if($excerpt){
 		return $excerpt;
@@ -47,7 +26,7 @@ function my_excerpt($text, $excerpt){
 	}
 }
 
-$adminOptions = kalinsLinks_get_admin_options();//for individual pages/posts we grab all the PDF options from the options page instead of the POST
+
 		
 //$titlePage = $adminOptions["titlePage"];
 //$finalPage = $adminOptions["finalPage"];
@@ -176,7 +155,6 @@ $beginOutput =   '<style type="text/css">
 			
 			case "attachment" :
 				$pageList = get_posts('numberposts=-1&post_type=' .$typeName);
-				
 				$le = count($pageList);
 				for($j=0; $j<$le; $j++){//build our list of pages with checkboxes
 					$pageID = $pageList[$j]->ID;
@@ -189,7 +167,7 @@ $beginOutput =   '<style type="text/css">
 				$le = count($pageList);
 				for($j=0; $j<$le; $j++){//build our list of pages with checkboxes
 					$pageID = $pageList[$j]->ID;
-					$output = $output .'<a href="' .$wpurl .'/wp-admin/post.php?post=' .$pageID .'&action=edit">edit</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href=" ' .get_permalink( $pageID ) .'" title="' .my_excerpt($pageList[$j]->post_content , $pageList[$j]->post_excerpt).'">' .substr($pageList[$j]->post_title, 0, $charLength) .'</a><br />';
+					$output = $output .'<a href="' .$wpurl .'/wp-admin/post.php?post=' .$pageID .'&action=edit">edit</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href=" ' .get_permalink( $pageID ) .'" title="' .my_excerpt($pageList[$j]->post_content , $pageList[$j]->post_excerpt, $adminOptions["includeExcerpt"]).'">' .substr($pageList[$j]->post_title, 0, $charLength) .'</a><br />';
 				}
 				break;
 		}

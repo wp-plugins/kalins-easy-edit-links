@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Kalin's Easy Edit Links
-Version: 1.0
+Version: 1.1
 Plugin URI: http://kalinbooks.com/easy-edit-links/
 Description: Adds a box to your page/post edit screen with links and edit buttons for all pages, posts, tags, categories, and links for convenient linking.
 Author: Kalin Ringkvist
@@ -70,6 +70,8 @@ function kalinsLinks_save(){
 	$kalinsLinksAdminOptions['includeFuture'] = $_POST['includeFuture'];
 	$kalinsLinksAdminOptions['includePrivate'] = $_POST['includePrivate'];
 	
+	$kalinsLinksAdminOptions['includeExcerpt'] = $_POST['includeExcerpt'];
+	
 	$kalinsLinksAdminOptions['typeArr'] = $_POST['typeArr'];
 	
 	$kalinsLinksAdminOptions['cache'] = 'none';
@@ -132,6 +134,7 @@ function kalinsLinks_getAdminSettings(){//simply returns all our default option 
 	$kalinsLinksAdminOptions['includeDrafts'] = 'true';//JavSscript and HTML are so convoluted and silly compared to Flash ActionScript. I mean, using 'on' and 'off' instead of true and false... seriously?
 	$kalinsLinksAdminOptions['includeFuture'] = 'true';
 	$kalinsLinksAdminOptions['includePrivate'] = 'true';
+	$kalinsLinksAdminOptions['includeExcerpt'] = 'false';
 	
 	$kalinsLinksAdminOptions['typeArr'] = '[{"typeName":"page","enabled":true,"abbr":"page"},{"typeName":"post","enabled":true,"abbr":"post"},{"typeName":"category","enabled":true,"abbr":"cat"},{"typeName":"tag","enabled":true,"abbr":"tag"},{"typeName":"link","enabled":true,"abbr":"link"},{"typeName":"attachment","enabled":true,"abbr":"att"},{"typeName":"revision","enabled":false,"abbr":"rev"},{"typeName":"nav_menu_item","enabled":false,"abbr":"nav"}]';
 	

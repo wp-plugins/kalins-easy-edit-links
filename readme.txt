@@ -52,6 +52,9 @@ Note: May require PHP 5.2 (hasn't been tested on older versions)
 * Added ability to select which post types to show
 * Added ability to customize order and abbreviation of columns
 
+= 1.1 =
+*after upgrading to 1.0 on my live site, a PHP error was being thrown due to something wacky in my post content. Maybe I had bad markup or corrupt characters in a post or something. I fixed this by turning off excerpts, so I added a checkbox to select whether or not you want excerpts added as link titles.
+
 
 == About ==
 

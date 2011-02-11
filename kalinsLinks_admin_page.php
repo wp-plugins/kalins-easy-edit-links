@@ -48,6 +48,7 @@
 			data.includeFuture = $("#chkIncludeFuture").is(':checked');
 			data.includePrivate = $("#chkIncludePrivate").is(':checked');
 			data.enableCache = $("#chkEnableCache").is(':checked');
+			data.includeExcerpt = $("#chkIncludeExcerpt").is(':checked');
 			
 			var sortArr = $("#sortable").sortable('toArray');
 			
@@ -139,7 +140,7 @@
 <p><input type="checkbox" id="chkIncludeDrafts" <?php if($adminOptions["includeDrafts"] == 'true'){echo "checked='yes'";} ?> /> show drafts</p>
 <p><input type="checkbox" id="chkIncludeFuture" <?php if($adminOptions["includeFuture"] == 'true'){echo "checked='yes'";} ?> /> show future posts</p>
 <p><input type="checkbox" id="chkIncludePrivate" <?php if($adminOptions["includePrivate"] == 'true'){echo "checked='yes'";} ?> /> show private posts</p>
-<br/><br/>
+<p><input type="checkbox" id="chkIncludeExcerpt" <?php if($adminOptions["includeExcerpt"] == 'true'){echo "checked='yes'";} ?> /> include excerpts as link titles (Increases load time. May cuase PHP error.)</p>
 <p><button id="btnSave">Save Settings</button></p>
 
 </div>
